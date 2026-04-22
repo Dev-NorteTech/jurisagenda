@@ -32,8 +32,6 @@ const schema = z.object({
   if (d.event_type === 'AUDIENCIA') {
     if (!d.end_datetime)
       ctx.addIssue({ code: 'custom', path: ['end_datetime'], message: 'Obrigatório para audiências' });
-    if (!d.video_link)
-      ctx.addIssue({ code: 'custom', path: ['video_link'], message: 'Obrigatório para audiências' });
   }
   if (d.event_type === 'CONTRATO') {
     if (!d.supplier_name)
@@ -391,7 +389,7 @@ export function EventModal() {  const { open, hide, editId, preDate } = useEvent
             {show.video && (
               <div>
                 <label className="field-label">
-                  Link da Videochamada {eventType === 'AUDIENCIA' ? '*' : '(opcional)'}
+                  Link da Videochamada {eventType === 'AUDIENCIA' ? '(opcional)' : '(opcional)'}
                 </label>
                 <input
                   {...register('video_link')}
