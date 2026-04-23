@@ -58,6 +58,16 @@ export default function TVPage() {
       window.history.replaceState({}, '', '/tv');
     }
 
+    // Tenta pegar tokens do localStorage (passados pela sidebar)
+    const lsToken   = localStorage.getItem('tv_token');
+    const lsRefresh = localStorage.getItem('tv_refresh');
+    if (lsToken && lsRefresh) {
+      sessionStorage.setItem('access', lsToken);
+      sessionStorage.setItem('refresh', lsRefresh);
+      localStorage.removeItem('tv_token');
+      localStorage.removeItem('tv_refresh');
+    }
+
     const verify = async () => {
       const hasToken = getRefresh();
       if (isAuth || hasToken) {
@@ -68,7 +78,7 @@ export default function TVPage() {
           return;
         } catch {}
       }
-      router.replace('/login');
+      router.replace('/login?redirect=/tv');
     };
     verify();
   }, []); // eslint-disable-line

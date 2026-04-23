@@ -34,7 +34,10 @@ export default function LoginPage() {
       const me     = await authApi.me();
       setUser(me);
       toast.success(`Bem-vindo, ${me.full_name || tokens.user?.full_name}!`);
-      router.push('/dashboard');
+      // Redireciona para a página de origem se vier de /tv
+      const params   = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') ?? '/dashboard';
+      router.push(redirect);
     } catch {
       toast.error('Credenciais incorretas. Verifique e tente novamente.');
     } finally {
