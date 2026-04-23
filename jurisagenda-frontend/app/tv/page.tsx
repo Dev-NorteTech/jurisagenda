@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAccess, getRefresh, authApi } from '@/lib/api';
+import { getRefresh, authApi } from '@/lib/api';
 import { useAuth } from '@/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gavel, Users, Clock, FileText, Wifi, WifiOff } from 'lucide-react';
@@ -15,41 +15,31 @@ import { speakGoogleTTS } from '@/lib/tts';
 
 const ICONS = {
   AUDIENCIA: Gavel,
-  REUNIAO: Users,
-  PRAZO: Clock,
-  CONTRATO: FileText,
+  REUNIAO:   Users,
+  PRAZO:     Clock,
+  CONTRATO:  FileText,
 };
 
 function Clock24() {
   const [time, setTime] = useState('');
-
   useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      setTime(now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-    };
+    const tick = () => setTime(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
-
-  return (
-    <span className="font-mono text-3xl font-bold tracking-widest text-gray-800">
-      {time}
-    </span>
-  );
+  return <span className="font-mono text-3xl font-bold tracking-widest text-gray-800 dark:text-gray-100">{time}</span>;
 }
 
 export default function TVPage() {
   const { active, history, speaking, setCall, confirm, setSpeaking, setHistory } = useTV();
-  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [checking, setChecking] = useState(true);
-  const router = useRouter();
+  const router  = useRouter();
   const { isAuth, setUser } = useAuth();
 
-  // Verifica autenticação antes de mostrar o painel
+  // Auth — lê tokens do localStorage (passados pela sidebar) ou URL
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params     = new URLSearchParams(window.location.search);
     const urlToken   = params.get('token');
     const urlRefresh = params.get('refresh');
     if (urlToken && urlRefresh) {
@@ -57,8 +47,6 @@ export default function TVPage() {
       sessionStorage.setItem('refresh', urlRefresh);
       window.history.replaceState({}, '', '/tv');
     }
-
-    // Tenta pegar tokens do localStorage (passados pela sidebar)
     const lsToken   = localStorage.getItem('tv_token');
     const lsRefresh = localStorage.getItem('tv_refresh');
     if (lsToken && lsRefresh) {
@@ -67,7 +55,6 @@ export default function TVPage() {
       localStorage.removeItem('tv_token');
       localStorage.removeItem('tv_refresh');
     }
-
     const verify = async () => {
       const hasToken = getRefresh();
       if (isAuth || hasToken) {
@@ -83,19 +70,7 @@ export default function TVPage() {
     verify();
   }, []); // eslint-disable-line
 
-  // Remove classe dark do html para o painel TV sempre ser claro
-  useEffect(() => {
-    document.documentElement.classList.remove('dark');
-    return () => {
-      // Restaura o tema salvo ao sair da página TV
-      try {
-        const t = JSON.parse(localStorage.getItem('juris-theme') || '{}');
-        if (t.state?.dark) document.documentElement.classList.add('dark');
-      } catch {}
-    };
-  }, []);
-
-  // Tenta desbloquear autoplay automaticamente ao montar
+  // Desbloquear autoplay
   useEffect(() => {
     if (checking) return;
     const unlock = async () => {
@@ -107,90 +82,73 @@ export default function TVPage() {
         src.buffer = buf;
         src.connect(ctx.destination);
         src.start(0);
-        setAudioUnlocked(true);
       } catch {}
     };
     unlock();
   }, [checking]);
 
-  // Busca histórico do dia ao montar (só se autenticado)
   const { data: historyData } = useQuery({
     queryKey: ['tv-history'],
-    queryFn: tvApi.history,
+    queryFn:  tvApi.history,
     refetchOnWindowFocus: false,
-    enabled: typeof window !== 'undefined' && !!sessionStorage.getItem('access'),
+    enabled: !checking,
   });
 
   useEffect(() => {
     if (historyData?.history?.length) {
       setHistory(historyData.history.map((c: any) => ({
-        code: c.tv_code,
+        code:       c.tv_code,
         event_type: c.event_type,
-        priority: c.priority,
-        tts_text: '',
-        timestamp: c.called_at,
-        event_id: c.event?.id ?? '',
+        priority:   c.priority,
+        tts_text:   '',
+        timestamp:  c.called_at,
+        event_id:   c.event?.id ?? '',
       })));
     }
   }, [historyData]);
 
   const { connected } = useWebSocket('/ws/tv/', {
     onMessage: (msg: WSMessage) => {
-      if (msg.type === 'tv.call') {
-        setCall(msg.payload);
-        speakTTS(msg.payload.tts_text);
-      }
-      if (msg.type === 'tv.confirm') {
-        confirm(msg.payload.code);
-      }
+      if (msg.type === 'tv.call')    { setCall(msg.payload); speakTTS(msg.payload.tts_text); }
+      if (msg.type === 'tv.confirm') { confirm(msg.payload.code); }
     },
   });
 
-  const speakTTS = (text: string) => {
-    speakGoogleTTS(text, () => setSpeaking(true), () => setSpeaking(false));
-  };
+  const speakTTS = (text: string) => speakGoogleTTS(text, () => setSpeaking(true), () => setSpeaking(false));
 
   if (checking) return null;
 
-  const activeCfg = active ? EVENT_CONFIG[active.event_type] : null;
+  const activeCfg  = active ? EVENT_CONFIG[active.event_type] : null;
   const ActiveIcon = active ? ICONS[active.event_type] : null;
 
   return (
-    <div className="tv-screen select-none bg-slate-50 text-gray-900 overflow-hidden">
-
-      {/* Efeitos visuais suaves para tela clara */}
+    <div className="tv-screen select-none overflow-hidden bg-slate-50 dark:bg-[#0f1923] text-gray-900 dark:text-gray-100">
       <div className="tv-scan-line opacity-5" />
-      <div className="tv-vignette opacity-20 bg-gradient-to-t from-gray-200 to-transparent mix-blend-multiply" />
 
-      {/* Conteúdo principal */}
       <div className="relative z-10 flex h-screen">
 
-        {/* ── Área central (chamada ativa) ── */}
+        {/* ── Área central ── */}
         <div className="relative flex-1 flex flex-col items-center justify-center px-16">
 
           {/* Header */}
           <div className="absolute top-8 left-8 right-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center bg-white shadow-sm border border-gray-200"
-              >
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-gray-800">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-[#162030] shadow-sm border border-gray-200 dark:border-[#243550]">
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-gray-800 dark:text-gray-200">
                   <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
                 </svg>
               </div>
               <div>
-                <p className="text-gray-900 font-serif font-bold text-lg leading-none">JurisAgenda</p>
-                <p className="text-gray-500 text-xs uppercase tracking-widest font-semibold">Recepção</p>
+                <p className="font-serif font-bold text-lg leading-none text-gray-900 dark:text-gray-100">JurisAgenda</p>
+                <p className="text-xs uppercase tracking-widest font-semibold text-gray-500 dark:text-gray-400">Recepção</p>
               </div>
             </div>
-
             <div className="flex items-center gap-6">
               <div
                 className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full"
-                style={
-                  connected
-                    ? { background: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0' }
-                    : { background: '#fee2e2', color: '#991b1b', border: '1px solid #fecaca' }
+                style={connected
+                  ? { background: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0' }
+                  : { background: '#fee2e2', color: '#991b1b', border: '1px solid #fecaca' }
                 }
               >
                 {connected ? <Wifi size={11} /> : <WifiOff size={11} />}
@@ -211,42 +169,21 @@ export default function TVPage() {
                 transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
                 className="text-center"
               >
-                {/* Ícone do tipo */}
                 <div
-                  className="mx-auto mb-8 w-32 h-32 rounded-3xl flex items-center justify-center bg-white"
-                  style={{
-                    border: `1px solid ${activeCfg.color}40`,
-                    boxShadow: `0 20px 50px -10px ${activeCfg.color}40, 0 0 100px ${activeCfg.color}20`,
-                  }}
+                  className="mx-auto mb-8 w-32 h-32 rounded-3xl flex items-center justify-center bg-white dark:bg-[#162030]"
+                  style={{ border: `1px solid ${activeCfg.color}40`, boxShadow: `0 20px 50px -10px ${activeCfg.color}40` }}
                 >
-                  <ActiveIcon
-                    size={64}
-                    style={{ color: activeCfg.color }}
-                  />
+                  <ActiveIcon size={64} style={{ color: activeCfg.color }} />
                 </div>
-
-                {/* Tipo de evento */}
-                <p
-                  className="text-3xl font-bold mb-4 uppercase tracking-[0.2em]"
-                  style={{ color: activeCfg.color }}
-                >
+                <p className="text-3xl font-bold mb-4 uppercase tracking-[0.2em]" style={{ color: activeCfg.color }}>
                   {activeCfg.label}
                 </p>
-
-                {/* Código principal */}
                 <div
                   className="tv-code mb-8 font-serif font-black tracking-tighter"
-                  style={{
-                    color: '#111827', // Texto bem escuro para contraste
-                    fontSize: '12rem',
-                    lineHeight: '1',
-                    textShadow: `0 10px 30px ${activeCfg.color}30`,
-                  }}
+                  style={{ color: activeCfg.color, fontSize: '12rem', lineHeight: '1', textShadow: `0 10px 30px ${activeCfg.color}30` }}
                 >
                   {active.code}
                 </div>
-
-                {/* Alta prioridade */}
                 {active.priority === 'HIGH' && (
                   <motion.div
                     animate={{ opacity: [1, 0.4, 1] }}
@@ -257,8 +194,6 @@ export default function TVPage() {
                     Alta Prioridade
                   </motion.div>
                 )}
-
-                {/* Indicador de voz */}
                 {speaking && (
                   <div className="mt-8 flex justify-center">
                     <div className="wave-bars" style={{ color: activeCfg.color }}>
@@ -268,21 +203,13 @@ export default function TVPage() {
                 )}
               </motion.div>
             ) : (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center"
-              >
-                <div
-                  className="mx-auto mb-8 w-40 h-40 rounded-full flex items-center justify-center bg-white shadow-sm border border-gray-100"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" className="w-20 h-20 text-gray-200">
+              <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
+                <div className="mx-auto mb-8 w-40 h-40 rounded-full flex items-center justify-center bg-white dark:bg-[#162030] shadow-sm border border-gray-100 dark:border-[#243550]">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-20 h-20 text-gray-200 dark:text-gray-600">
                     <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <p className="text-gray-400 text-3xl font-serif font-medium">
+                <p className="text-3xl font-serif font-medium text-gray-400 dark:text-gray-500">
                   Aguardando chamadas…
                 </p>
               </motion.div>
@@ -291,48 +218,31 @@ export default function TVPage() {
         </div>
 
         {/* ── Painel lateral: histórico ── */}
-        <div
-          className="w-96 h-full flex flex-col border-l border-gray-200 p-8 bg-white/50 backdrop-blur-sm"
-        >
-          <p
-            className="text-xs font-bold uppercase tracking-[0.2em] mb-8 text-gray-500"
-          >
+        <div className="w-96 h-full flex flex-col border-l border-gray-200 dark:border-[#243550] p-8 bg-white/50 dark:bg-[#162030]/80 backdrop-blur-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] mb-8 text-gray-500 dark:text-gray-400">
             Últimas Chamadas
           </p>
-
           <div className="space-y-4">
             <AnimatePresence>
               {history.length === 0 ? (
-                <p className="text-sm text-gray-400 italic text-center mt-10">
-                  Sem histórico ainda
-                </p>
+                <p className="text-sm italic text-center mt-10 text-gray-400 dark:text-gray-500">Sem histórico ainda</p>
               ) : (
                 history.map((call, i) => {
-                  const hCfg = EVENT_CONFIG[call.event_type];
+                  const hCfg  = EVENT_CONFIG[call.event_type];
                   const HIcon = ICONS[call.event_type];
                   return (
                     <motion.div
                       key={`${call.code}-${i}`}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1 - i * 0.25, x: 0 }}
-                      className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-sm border border-gray-100"
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#1a2840] shadow-sm border border-gray-100 dark:border-[#243550]"
                     >
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                        style={{ background: hCfg.color + '15', color: hCfg.color }}
-                      >
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: hCfg.color + '15', color: hCfg.color }}>
                         <HIcon size={24} />
                       </div>
                       <div>
-                        <p
-                          className="font-serif font-bold text-2xl leading-none"
-                          style={{ color: '#1f2937' }}
-                        >
-                          {call.code}
-                        </p>
-                        <p className="text-sm mt-1 font-medium" style={{ color: hCfg.color }}>
-                          {hCfg.label}
-                        </p>
+                        <p className="font-serif font-bold text-2xl leading-none text-gray-800 dark:text-gray-100">{call.code}</p>
+                        <p className="text-sm mt-1 font-medium" style={{ color: hCfg.color }}>{hCfg.label}</p>
                       </div>
                     </motion.div>
                   );
@@ -340,10 +250,8 @@ export default function TVPage() {
               )}
             </AnimatePresence>
           </div>
-
-          {/* Rodapé LGPD */}
-          <div className="mt-auto pt-6 border-t border-gray-200">
-            <p className="text-[11px] leading-relaxed text-gray-400 text-justify">
+          <div className="mt-auto pt-6 border-t border-gray-200 dark:border-[#243550]">
+            <p className="text-[11px] leading-relaxed text-gray-400 dark:text-gray-500 text-justify">
               Este painel exibe apenas códigos anônimos. Nenhum dado pessoal é exposto. Em conformidade com a LGPD — Lei nº 13.709/2018.
             </p>
           </div>
