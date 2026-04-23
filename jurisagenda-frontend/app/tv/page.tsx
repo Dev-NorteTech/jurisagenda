@@ -83,6 +83,18 @@ export default function TVPage() {
     verify();
   }, []); // eslint-disable-line
 
+  // Remove classe dark do html para o painel TV sempre ser claro
+  useEffect(() => {
+    document.documentElement.classList.remove('dark');
+    return () => {
+      // Restaura o tema salvo ao sair da página TV
+      try {
+        const t = JSON.parse(localStorage.getItem('juris-theme') || '{}');
+        if (t.state?.dark) document.documentElement.classList.add('dark');
+      } catch {}
+    };
+  }, []);
+
   // Tenta desbloquear autoplay automaticamente ao montar
   useEffect(() => {
     if (checking) return;
