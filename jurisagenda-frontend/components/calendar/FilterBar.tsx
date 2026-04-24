@@ -1,15 +1,16 @@
 'use client';
-import { Gavel, Users, Clock, FileText, ChevronDown } from 'lucide-react';
+import { Gavel, Users, Clock, FileText, ChevronDown, Microscope } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCalendar } from '@/store';
 import { accountsApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
 const FILTERS = [
-  { type: 'AUDIENCIA', label: 'Audiências', icon: Gavel,    color: '#DC2626', bg: '#FEE2E2' },
-  { type: 'REUNIAO',   label: 'Reuniões',   icon: Users,    color: '#2563EB', bg: '#DBEAFE' },
-  { type: 'PRAZO',     label: 'Prazos',     icon: Clock,    color: '#CA8A04', bg: '#FEF9C3' },
-  { type: 'CONTRATO',  label: 'Contratos',  icon: FileText, color: '#16A34A', bg: '#DCFCE7' },
+  { type: 'AUDIENCIA', label: 'Audiências', icon: Gavel,       color: '#DC2626', bg: '#FEE2E2' },
+  { type: 'REUNIAO',   label: 'Reuniões',   icon: Users,       color: '#2563EB', bg: '#DBEAFE' },
+  { type: 'PRAZO',     label: 'Prazos',     icon: Clock,       color: '#CA8A04', bg: '#FEF9C3' },
+  { type: 'CONTRATO',  label: 'Contratos',  icon: FileText,    color: '#16A34A', bg: '#DCFCE7' },
+  { type: 'PERICIA',   label: 'Perícias',   icon: Microscope,  color: '#7C3AED', bg: '#EDE9FE' },
 ];
 
 export function FilterBar() {

@@ -78,7 +78,7 @@ class TVTTSView(APIView):
             )
 
         api_key = getattr(settings, "GOOGLE_TTS_API_KEY", "")
-        if not api_key:
+        if not api_key or api_key in ("sua_chave_aqui", ""):
             return Response({"error": "Google TTS não configurado"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         try:

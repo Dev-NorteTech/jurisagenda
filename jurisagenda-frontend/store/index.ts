@@ -130,7 +130,7 @@ const now = new Date();
 export const useCalendar = create<CalendarStore>((set, get) => ({
   month:          now.getMonth() + 1,
   year:           now.getFullYear(),
-  filters:        new Set(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO']),
+  filters:        new Set(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'PERICIA']),
   assignedFilter: null,
   setMonth: (m, y) => set({ month: m, year: y }),
   toggleFilter: (t) => {

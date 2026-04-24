@@ -46,12 +46,18 @@ class IsTVOperator(BasePermission):
 
 
 class CannotModifyEvents(BasePermission):
-    """Bloqueia TV_OPERATOR de criar/editar eventos (TC-008)."""
+    """
+    Regras de acesso para eventos:
+    - Não autenticado → 401
+    - TV_OPERATOR → só leitura (GET/HEAD/OPTIONS)
+    - ADMIN, LAWYER, SECRETARY → acesso completo
+    """
 
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
         if request.user.role == RoleChoices.TV_OPERATOR:
-            # TV_OPERATOR só pode ler
             return request.method in ("GET", "HEAD", "OPTIONS")
-        return True
+        return request.user.role in (
+            RoleChoices.ADMIN, RoleChoices.LAWYER, RoleChoices.SECRETARY
+        )

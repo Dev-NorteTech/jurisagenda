@@ -196,15 +196,7 @@ export default function TVPage() {
                   </p>
                 )}
 
-                {/* Número do processo */}
-                {active.process_number && (
-                  <p
-                    className="text-lg font-mono mb-6 text-center"
-                    style={{ color: activeCfg.color, opacity: 0.6 }}
-                  >
-                    Proc. {active.process_number}
-                  </p>
-                )}
+                {/* Número do processo removido — LGPD: dados pessoais não trafegam no painel TV */}
                 {active.priority === 'HIGH' && (
                   <motion.div
                     animate={{ opacity: [1, 0.4, 1] }}

@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Gavel, Users, Clock, FileText,
+  X, Gavel, Users, Clock, FileText, Microscope,
   MapPin, Video, Calendar, User,
   Tv, Tag, Trash2, Pencil, Loader2, History, Printer, Copy,
 } from 'lucide-react';
@@ -19,6 +19,7 @@ const ICONS = {
   REUNIAO:   Users,
   PRAZO:     Clock,
   CONTRATO:  FileText,
+  PERICIA:   Microscope,
 };
 
 export function EventDetailModal() {

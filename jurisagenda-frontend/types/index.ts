@@ -158,7 +158,6 @@ export interface TVQueueState {
 export interface TVCallPayload {
     code: string;
     title: string;
-    process_number: string;
     event_type: EventType;
     event_type_label: string;
     priority: TVPriority;
