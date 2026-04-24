@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 
-from core.permissions import CannotModifyEvents, IsAdminOrLawyerOrSecretary
+from core.permissions import CannotModifyEvents, IsAdminOrLawyerOrSecretary, IsTVOperator
 
 from .models import Event, EventStatus
 from .serializers import (
@@ -53,7 +53,7 @@ class EventViewSet(
     POST   tv_call     — Disparar chamada TV
     POST   confirm_call — Confirmar chamada TV
     """
-    permission_classes = [IsAdminOrLawyerOrSecretary, CannotModifyEvents]
+    permission_classes = [CannotModifyEvents]
     filterset_class = EventFilter
     search_fields = ["title", "process_number", "client__full_name"]
     ordering_fields = ["start_datetime", "status", "event_type"]
@@ -62,6 +62,12 @@ class EventViewSet(
         return Event.objects.select_related(
             "client", "assigned_to"
         ).prefetch_related("documents")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        event = serializer.save()
+        return Response(EventListSerializer(event).data, status=status.HTTP_201_CREATED)
 
     def get_serializer_class(self):
         if self.action == "create":

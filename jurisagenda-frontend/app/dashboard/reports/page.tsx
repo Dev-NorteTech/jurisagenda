@@ -17,18 +17,21 @@ const TYPE_COLORS = {
   REUNIAO:   EVENT_CONFIG.REUNIAO.color,
   PRAZO:     EVENT_CONFIG.PRAZO.color,
   CONTRATO:  EVENT_CONFIG.CONTRATO.color,
+  PERICIA:   EVENT_CONFIG.PERICIA.color,
 };
 const TYPE_LABELS: Record<string, string> = {
   AUDIENCIA: 'Audiência',
   REUNIAO:   'Reunião',
   PRAZO:     'Prazo',
   CONTRATO:  'Contrato',
+  PERICIA:   'Perícia',
 };
 const TYPE_EMOJIS: Record<string, string> = {
   AUDIENCIA: '⚖',
   REUNIAO:   '◎',
   PRAZO:     '◷',
   CONTRATO:  '▤',
+  PERICIA:   '🔬',
 };
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   SCHEDULED:   { label: 'Agendado',   color: '#2563eb' },
@@ -158,7 +161,7 @@ export default function ReportsPage() {
     rows.push(['Por Tipo — Mês Atual']);
     rows.push(['Tipo', 'Quantidade', 'Média/Semana', 'Total Ano']);
     const annualMap = Object.fromEntries((data.by_type ?? []).map((t: any) => [t.event_type, t.total]));
-    for (const t of ['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO']) {
+    for (const t of ['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'PERICIA']) {
       rows.push([
         TYPE_LABELS[t],
         String(data.this_month_by_type?.[t] ?? 0),
@@ -170,12 +173,12 @@ export default function ReportsPage() {
 
     // Por mês
     rows.push(['Volume Mensal']);
-    rows.push(['Mês', 'Audiência', 'Reunião', 'Prazo', 'Contrato', 'Total']);
+    rows.push(['Mês', 'Audiência', 'Reunião', 'Prazo', 'Contrato', 'Perícia', 'Total']);
     for (const m of (data.by_month ?? [])) {
       rows.push([
         MONTHS[m.month - 1],
         String(m.AUDIENCIA), String(m.REUNIAO),
-        String(m.PRAZO),     String(m.CONTRATO),
+        String(m.PRAZO),     String(m.CONTRATO),  String(m.PERICIA),
         String(m.total),
       ]);
     }
@@ -219,6 +222,7 @@ export default function ReportsPage() {
     Reunião:   m.REUNIAO,
     Prazo:     m.PRAZO,
     Contrato:  m.CONTRATO,
+    Perícia:   m.PERICIA,
   }));
 
   // Gráfico 2: Distribuição por tipo
@@ -324,8 +328,8 @@ export default function ReportsPage() {
             — quantitativo exato do mês, média semanal e total anual
           </span>
         </div>
-        <div className="grid grid-cols-4 gap-4">
-          {(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO'] as const).map((t) => (
+        <div className="grid grid-cols-5 gap-4">
+          {(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'PERICIA'] as const).map((t) => (
             <TypeBreakdownCard
               key={t}
               type={t}
@@ -355,6 +359,7 @@ export default function ReportsPage() {
               <Line type="monotone" dataKey="Reunião"   stroke={TYPE_COLORS.REUNIAO}   strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
               <Line type="monotone" dataKey="Prazo"     stroke={TYPE_COLORS.PRAZO}     strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
               <Line type="monotone" dataKey="Contrato"  stroke={TYPE_COLORS.CONTRATO}  strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+              <Line type="monotone" dataKey="Perícia"   stroke={TYPE_COLORS.PERICIA}   strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -383,6 +388,9 @@ export default function ReportsPage() {
                 </Bar>
                 <Bar dataKey="Contrato"  fill={TYPE_COLORS.CONTRATO}  radius={[3,3,0,0]}>
                   <LabelList dataKey="Contrato" position="top" style={{ fontSize: 9, fill: '#a89e90' }} formatter={(v: number) => v > 0 ? v : ''} />
+                </Bar>
+                <Bar dataKey="Perícia"   fill={TYPE_COLORS.PERICIA}   radius={[3,3,0,0]}>
+                  <LabelList dataKey="Perícia" position="top" style={{ fontSize: 9, fill: '#a89e90' }} formatter={(v: number) => v > 0 ? v : ''} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

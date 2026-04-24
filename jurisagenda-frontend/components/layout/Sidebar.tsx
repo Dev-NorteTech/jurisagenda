@@ -106,25 +106,27 @@ export function Sidebar() {
           Ferramentas
         </p>
 
-        <Link href="/tv" target="_blank" className="nav-link" onClick={(e) => {
-          e.preventDefault();
-          const token   = sessionStorage.getItem('access');
-          const refresh = sessionStorage.getItem('refresh');
-          if (token && refresh) {
-            localStorage.setItem('tv_token', token);
-            localStorage.setItem('tv_refresh', refresh);
-          }
-          window.open('/tv', '_blank');
-        }}>
+        <button
+          className="nav-link w-full text-left"
+          onClick={() => {
+            const token   = sessionStorage.getItem('access');
+            const refresh = sessionStorage.getItem('refresh');
+            if (token && refresh) {
+              localStorage.setItem('tv_token', token);
+              localStorage.setItem('tv_refresh', refresh);
+            }
+            window.open('/tv', '_blank');
+          }}
+        >
           <Monitor size={16} className="shrink-0" />
           <span className="flex-1">Painel TV</span>
           <span
             className="text-[10px] px-1.5 py-0.5 rounded-full"
             style={{ background: '#f3ecdb', color: '#8a7e70' }}
           >
-            PÚBLICO
+            TV
           </span>
-        </Link>
+        </button>
       </nav>
 
       {/* Rodapé com usuário */}

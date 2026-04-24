@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from core.permissions import IsAdminOrLawyerOrSecretary
 from .models import Event, EventStatus
 
-EVENT_TYPES = ['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO']
+EVENT_TYPES = ['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'PERICIA']
 
 
 class EventReportsView(APIView):
@@ -83,6 +83,7 @@ class EventReportsView(APIView):
                 'REUNIAO':   mqs_m.filter(event_type='REUNIAO').count(),
                 'PRAZO':     mqs_m.filter(event_type='PRAZO').count(),
                 'CONTRATO':  mqs_m.filter(event_type='CONTRATO').count(),
+                'PERICIA':   mqs_m.filter(event_type='PERICIA').count(),
                 'DONE':      mqs_m.filter(status=EventStatus.DONE).count(),
                 'CANCELLED': mqs_m.filter(status=EventStatus.CANCELLED).count(),
             })

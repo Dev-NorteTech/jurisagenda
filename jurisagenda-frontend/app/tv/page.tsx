@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getRefresh, authApi } from '@/lib/api';
 import { useAuth } from '@/store';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gavel, Users, Clock, FileText, Wifi, WifiOff } from 'lucide-react';
+import { Gavel, Users, Clock, FileText, Wifi, WifiOff, Microscope } from 'lucide-react';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useTV } from '@/store';
 import { EVENT_CONFIG } from '@/lib/utils';
@@ -18,6 +18,7 @@ const ICONS = {
   REUNIAO:   Users,
   PRAZO:     Clock,
   CONTRATO:  FileText,
+  PERICIA:   Microscope,
 };
 
 function Clock24() {
@@ -179,11 +180,23 @@ export default function TVPage() {
                   {activeCfg.label}
                 </p>
                 <div
-                  className="tv-code mb-8 font-serif font-black tracking-tighter"
+                  className="tv-code mb-4 font-serif font-black tracking-tighter"
                   style={{ color: activeCfg.color, fontSize: '12rem', lineHeight: '1', textShadow: `0 10px 30px ${activeCfg.color}30` }}
                 >
                   {active.code}
                 </div>
+
+                {/* Título do evento */}
+                {active.title && (
+                  <p
+                    className="text-2xl font-serif font-semibold mb-2 max-w-2xl mx-auto text-center"
+                    style={{ color: activeCfg.color, opacity: 0.85 }}
+                  >
+                    {active.title}
+                  </p>
+                )}
+
+                {/* Número do processo removido — LGPD: dados pessoais não trafegam no painel TV */}
                 {active.priority === 'HIGH' && (
                   <motion.div
                     animate={{ opacity: [1, 0.4, 1] }}
