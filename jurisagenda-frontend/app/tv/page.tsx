@@ -189,10 +189,20 @@ export default function TVPage() {
                 {/* Título do evento */}
                 {active.title && (
                   <p
-                    className="text-2xl font-serif font-semibold mb-6 max-w-2xl mx-auto text-center"
+                    className="text-2xl font-serif font-semibold mb-2 max-w-2xl mx-auto text-center"
                     style={{ color: activeCfg.color, opacity: 0.85 }}
                   >
                     {active.title}
+                  </p>
+                )}
+
+                {/* Número do processo */}
+                {active.process_number && (
+                  <p
+                    className="text-lg font-mono mb-6 text-center"
+                    style={{ color: activeCfg.color, opacity: 0.6 }}
+                  >
+                    Proc. {active.process_number}
                   </p>
                 )}
                 {active.priority === 'HIGH' && (
