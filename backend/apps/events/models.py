@@ -19,6 +19,7 @@ class EventType(models.TextChoices):
     REUNIAO = "REUNIAO", "Reunião"
     PRAZO = "PRAZO", "Prazo"
     CONTRATO = "CONTRATO", "Contrato"
+    PERICIA = "PERICIA", "Perícia"
 
 
 class EventStatus(models.TextChoices):

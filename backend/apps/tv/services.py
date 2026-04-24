@@ -29,12 +29,13 @@ class TVService:
         return {
             "type": "tv.call",
             "payload": {
-                "event_id": str(event.id),
-                "code": event.tv_code,
+                "event_id":   str(event.id),
+                "code":       event.tv_code,
+                "title":      event.title,
                 "event_type": event.event_type,
-                "priority": event.tv_priority,
-                "tts_text": tts_text,
-                "timestamp": timezone.now().isoformat(),
+                "priority":   event.tv_priority,
+                "tts_text":   tts_text,
+                "timestamp":  timezone.now().isoformat(),
             },
         }
 

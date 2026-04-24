@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 const schema = z.object({
   title: z.string().min(1, 'Título obrigatório'),
-  event_type: z.enum(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO']),
+  event_type: z.enum(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'PERICIA']),
   start_datetime: z.string().min(1, 'Data/hora obrigatória'),
   end_datetime: z.string().optional(),
   video_link: z.string().url('URL inválida').optional().or(z.literal('')),
@@ -50,6 +50,7 @@ const TYPE_COLORS = {
   REUNIAO: '#2563EB',
   PRAZO: '#CA8A04',
   CONTRATO: '#16A34A',
+  PERICIA: '#7C3AED',
 };
 
 const TYPE_LABELS = {
@@ -57,6 +58,7 @@ const TYPE_LABELS = {
   REUNIAO: 'Reunião',
   PRAZO: 'Prazo',
   CONTRATO: 'Contrato',
+  PERICIA: 'Perícia',
 };
 
 const TYPE_EMOJIS = {
@@ -64,6 +66,7 @@ const TYPE_EMOJIS = {
   REUNIAO:   '◎',
   PRAZO:     '◷',
   CONTRATO:  '▤',
+  PERICIA:   '🔬',
 };
 
 function ProcessNumberInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -309,7 +312,7 @@ export function EventModal() {  const { open, hide, editId, preDate } = useEvent
             <div>
               <label className="field-label">Tipo de Evento</label>
               <div className="grid grid-cols-4 gap-2">
-                {(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO'] as const).map((t) => (
+                {(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'PERICIA'] as const).map((t) => (
                   <label
                     key={t}
                     className={cn(

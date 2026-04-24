@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { parseISO, isSameDay, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Gavel, Users, Clock, FileText, AlertCircle, X, CheckCircle } from 'lucide-react';
+import { Gavel, Users, Clock, FileText, AlertCircle, X, CheckCircle, Microscope } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buildCalendarGrid, WEEKDAYS, fmtTime, cn } from '@/lib/utils';
 import { useEventModal, useEventDetail } from '@/store';
@@ -17,6 +17,7 @@ const ICONS = {
   REUNIAO:   Users,
   PRAZO:     Clock,
   CONTRATO:  FileText,
+  PERICIA:   Microscope,
 };
 
 interface Props {

@@ -25,7 +25,7 @@ export interface AuthTokens {
 }
 
 // ── Events ──────────────────────────────────────────────────────────────
-export type EventType = 'AUDIENCIA' | 'REUNIAO' | 'PRAZO' | 'CONTRATO';
+export type EventType = 'AUDIENCIA' | 'REUNIAO' | 'PRAZO' | 'CONTRATO' | 'PERICIA';
 export type EventStatus = 'SCHEDULED' | 'DONE' | 'CANCELLED' | 'RESCHEDULED';
 export type TVPriority = 'NORMAL' | 'HIGH';
 
@@ -157,6 +157,7 @@ export interface TVQueueState {
 // ── WebSocket ───────────────────────────────────────────────────────────
 export interface TVCallPayload {
     code: string;
+    title: string;
     event_type: EventType;
     event_type_label: string;
     priority: TVPriority;
