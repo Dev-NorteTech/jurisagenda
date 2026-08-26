@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 const schema = z.object({
   title: z.string().min(1, 'Título obrigatório'),
-  event_type: z.enum(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO']),
+  event_type: z.enum(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'OITIVA']),
   start_datetime: z.string().min(1, 'Data/hora obrigatória'),
   end_datetime: z.string().optional(),
   video_link: z.string().url('URL inválida').optional().or(z.literal('')),
@@ -52,6 +52,7 @@ const TYPE_COLORS = {
   REUNIAO: '#2563EB',
   PRAZO: '#CA8A04',
   CONTRATO: '#16A34A',
+  OITIVA: '#7C3AED',
 };
 
 const TYPE_LABELS = {
@@ -59,6 +60,7 @@ const TYPE_LABELS = {
   REUNIAO: 'Reunião',
   PRAZO: 'Prazo',
   CONTRATO: 'Contrato',
+  OITIVA: 'Oitiva',
 };
 
 const TYPE_EMOJIS = {
@@ -66,6 +68,7 @@ const TYPE_EMOJIS = {
   REUNIAO:   '◎',
   PRAZO:     '◷',
   CONTRATO:  '▤',
+  OITIVA:    '🎤',
 };
 
 export function EventModal() {
@@ -152,7 +155,7 @@ export function EventModal() {
 
   const onSubmit = (data: Form) => {
     // 🛠️ Sanitização: Convertendo valores vazios ("") para null.
-    const isAudienciaOrReuniao = data.event_type === 'AUDIENCIA' || data.event_type === 'REUNIAO';
+    const isAudienciaOrReuniao = data.event_type === 'AUDIENCIA' || data.event_type === 'REUNIAO' || data.event_type === 'OITIVA';
     const isContrato = data.event_type === 'CONTRATO';
     const isPrazo = data.event_type === 'PRAZO';
 
@@ -170,8 +173,8 @@ export function EventModal() {
 
   // 🛠️ VARIÁVEL SHOW RESTAURADA: Ela controla o que aparece na tela
   const show = {
-    end: eventType === 'AUDIENCIA' || eventType === 'REUNIAO',
-    video: eventType === 'AUDIENCIA' || eventType === 'REUNIAO',
+    end: eventType === 'AUDIENCIA' || eventType === 'REUNIAO' || eventType === 'OITIVA',
+    video: eventType === 'AUDIENCIA' || eventType === 'REUNIAO' || eventType === 'OITIVA',
     supplier: eventType === 'CONTRATO',
     due: eventType === 'CONTRATO' || eventType === 'PRAZO',
   };
@@ -235,7 +238,7 @@ export function EventModal() {
             <div>
               <label className="field-label">Tipo de Evento</label>
               <div className="grid grid-cols-4 gap-2">
-                {(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO'] as const).map((t) => (
+                {(['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'OITIVA'] as const).map((t) => (
                   <label
                     key={t}
                     className={cn(
@@ -271,7 +274,8 @@ export function EventModal() {
                   eventType === 'AUDIENCIA' ? 'Ex: Audiência de Instrução – Proc. 1234'
                     : eventType === 'REUNIAO' ? 'Ex: Reunião com cliente sobre contrato'
                       : eventType === 'PRAZO' ? 'Ex: Prazo recursal – Proc. 5678'
-                        : 'Ex: Contrato de prestação de serviços'
+                        : eventType === 'OITIVA' ? 'Ex: Oitiva de testemunha – Proc. 9012'
+                          : 'Ex: Contrato de prestação de serviços'
                 }
               />
               {errors.title && <p className="field-error">{errors.title.message}</p>}

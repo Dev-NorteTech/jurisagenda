@@ -16,6 +16,7 @@ const TYPE_COLORS = {
   REUNIAO:   EVENT_CONFIG.REUNIAO.color,
   PRAZO:     EVENT_CONFIG.PRAZO.color,
   CONTRATO:  EVENT_CONFIG.CONTRATO.color,
+  OITIVA:    EVENT_CONFIG.OITIVA.color,
 };
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   SCHEDULED:   { label: 'Agendado',   color: '#2563eb' },
@@ -68,6 +69,7 @@ export default function ReportsPage() {
     Reunião:   m.REUNIAO,
     Prazo:     m.PRAZO,
     Contrato:  m.CONTRATO,
+    Oitiva:    m.OITIVA,
   }));
 
   // Gráfico 2: Distribuição por tipo (pizza)
@@ -150,6 +152,7 @@ export default function ReportsPage() {
                 <Bar dataKey="Reunião"   fill={TYPE_COLORS.REUNIAO}   radius={[3,3,0,0]} />
                 <Bar dataKey="Prazo"     fill={TYPE_COLORS.PRAZO}     radius={[3,3,0,0]} />
                 <Bar dataKey="Contrato"  fill={TYPE_COLORS.CONTRATO}  radius={[3,3,0,0]} />
+                <Bar dataKey="Oitiva"    fill={TYPE_COLORS.OITIVA}    radius={[3,3,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           )}

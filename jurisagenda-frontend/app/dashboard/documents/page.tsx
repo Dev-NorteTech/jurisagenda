@@ -16,7 +16,7 @@ const ACCEPTED_TYPES = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 const MAX_SIZE_MB = 50;
-const EVENT_TYPES = ['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO'] as const;
+const EVENT_TYPES = ['AUDIENCIA', 'REUNIAO', 'PRAZO', 'CONTRATO', 'OITIVA'] as const;
 const PAGE_SIZE = 20;
 
 export default function DocumentsPage() {

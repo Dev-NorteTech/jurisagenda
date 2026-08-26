@@ -1,51 +1,51 @@
-# ── Etapa 1: dependências ─────────────────────────────────────────────
-FROM node:20-alpine AS deps
-WORKDIR /app
+    # ── Etapa 1: dependências ─────────────────────────────────────────────
+    FROM node:20-alpine AS deps
+    WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci
+    COPY package.json package-lock.json* ./
+    RUN npm ci
 
-# ── Etapa 2: build ────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
-WORKDIR /app
+    # ── Etapa 2: build ────────────────────────────────────────────────────
+    FROM node:20-alpine AS builder
+    WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+    COPY --from=deps /app/node_modules ./node_modules
+    COPY . .
 
-ARG NEXT_PUBLIC_API_URL=/api/v1/
-ARG NEXT_PUBLIC_WS_URL=
-ARG NEXT_PUBLIC_APP_NAME=JurisAgenda
-ARG BACKEND_URL=http://nginx
-ARG NEXT_PUBLIC_GOOGLE_TTS_KEY=
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
-ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
-ENV BACKEND_URL=$BACKEND_URL
-ENV NEXT_PUBLIC_GOOGLE_TTS_KEY=$NEXT_PUBLIC_GOOGLE_TTS_KEY
+    ARG NEXT_PUBLIC_API_URL=/api/v1/
+    ARG NEXT_PUBLIC_WS_URL=
+    ARG NEXT_PUBLIC_APP_NAME=JurisAgenda
+    ARG BACKEND_URL=http://nginx
+    ARG NEXT_PUBLIC_GOOGLE_TTS_KEY=
+    ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+    ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
+    ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
+    ENV BACKEND_URL=$BACKEND_URL
+    ENV NEXT_PUBLIC_GOOGLE_TTS_KEY=$NEXT_PUBLIC_GOOGLE_TTS_KEY
 
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
+    ENV NEXT_TELEMETRY_DISABLED=1
+    ENV NODE_ENV=production
 
-RUN npm run build
+    RUN npm run build
 
-# ── Etapa 3: runtime ──────────────────────────────────────────────────
-FROM node:20-alpine AS runner
-WORKDIR /app
+    # ── Etapa 3: runtime ──────────────────────────────────────────────────
+    FROM node:20-alpine AS runner
+    WORKDIR /app
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+    ENV NODE_ENV=production
+    ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser  --system --uid 1001 nextjs
+    RUN addgroup --system --gid 1001 nodejs
+    RUN adduser  --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+    COPY --from=builder /app/public ./public
+    COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+    COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
+    USER nextjs
 
-EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
+    EXPOSE 3000
+    ENV PORT=3000
+    ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+    CMD ["node", "server.js"]

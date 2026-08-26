@@ -1,5 +1,5 @@
 'use client';
-import { Gavel, Users, Clock, FileText } from 'lucide-react';
+import { Gavel, Users, Clock, FileText, Mic } from 'lucide-react';
 import { useCalendar } from '@/store';
 import { cn } from '@/lib/utils';
 
@@ -8,6 +8,7 @@ const FILTERS = [
   { type: 'REUNIAO',   label: 'Reuniões',   icon: Users,    color: '#2563EB', bg: '#DBEAFE' },
   { type: 'PRAZO',     label: 'Prazos',     icon: Clock,    color: '#CA8A04', bg: '#FEF9C3' },
   { type: 'CONTRATO',  label: 'Contratos',  icon: FileText, color: '#16A34A', bg: '#DCFCE7' },
+  { type: 'OITIVA',    label: 'Oitivas',    icon: Mic,      color: '#7C3AED', bg: '#EDE9FE' },
 ];
 
 export function FilterBar() {

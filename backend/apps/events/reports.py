@@ -51,6 +51,7 @@ class EventReportsView(APIView):
                 'REUNIAO':   mqs.filter(event_type='REUNIAO').count(),
                 'PRAZO':     mqs.filter(event_type='PRAZO').count(),
                 'CONTRATO':  mqs.filter(event_type='CONTRATO').count(),
+                'OITIVA':    mqs.filter(event_type='OITIVA').count(),
                 'DONE':      mqs.filter(status=EventStatus.DONE).count(),
                 'CANCELLED': mqs.filter(status=EventStatus.CANCELLED).count(),
             })
