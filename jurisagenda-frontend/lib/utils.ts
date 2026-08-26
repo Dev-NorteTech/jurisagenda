@@ -36,6 +36,7 @@ export const EVENT_CONFIG: Record<EventType, {
   PRAZO:     { label: 'Prazo',     color: '#CA8A04', bg: '#FEF9C3', border: '#CA8A04' },
   CONTRATO:  { label: 'Contrato',  color: '#16A34A', bg: '#DCFCE7', border: '#16A34A' },
   OITIVA:    { label: 'Oitiva',    color: '#7C3AED', bg: '#EDE9FE', border: '#7C3AED' },
+  PERICIA:   { label: 'Perícia',   color: '#7C3AED', bg: '#EDE9FE', border: '#7C3AED' },
 };
 
 export const STATUS_CONFIG = {

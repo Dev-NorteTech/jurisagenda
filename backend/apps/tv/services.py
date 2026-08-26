@@ -29,12 +29,13 @@ class TVService:
         return {
             "type": "tv.call",
             "payload": {
-                "event_id": str(event.id),
-                "code": event.tv_code,
+                "event_id":   str(event.id),
+                "code":       event.tv_code,
+                "title":      event.title,
                 "event_type": event.event_type,
-                "priority": event.tv_priority,
-                "tts_text": tts_text,
-                "timestamp": timezone.now().isoformat(),
+                "priority":   event.tv_priority,
+                "tts_text":   tts_text,
+                "timestamp":  timezone.now().isoformat(),
             },
         }
 
@@ -44,7 +45,7 @@ class TVService:
         if len(parts) == 2:
             prefix, number = parts
             number_words = TVService._number_to_words(int(number))
-            return f"{prefix} {number_words}"
+            return f"Chamada {prefix} {number_words}"
         return tv_code
 
     @staticmethod
