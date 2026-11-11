@@ -1,6 +1,5 @@
 'use client';
-import { Gavel, Users, Clock, FileText, Mic } from 'lucide-react';
-import { Gavel, Users, Clock, FileText, ChevronDown, Microscope } from 'lucide-react';
+import { Gavel, Users, Clock, FileText, Mic, ChevronDown, Microscope } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCalendar } from '@/store';
 import { accountsApi } from '@/lib/api';

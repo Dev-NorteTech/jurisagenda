@@ -213,7 +213,6 @@ export function EventModal() {  const { open, hide, editId, preDate } = useEvent
   const onSubmit = (data: Form) => {
     // 🛠️ Sanitização: Convertendo valores vazios ("") para null.
     const isAudienciaOrReuniao = data.event_type === 'AUDIENCIA' || data.event_type === 'REUNIAO' || data.event_type === 'OITIVA';
-    const isAudienciaOrReuniao = data.event_type === 'AUDIENCIA' || data.event_type === 'REUNIAO';
     const isContrato = data.event_type === 'CONTRATO';
     const isPrazo = data.event_type === 'PRAZO';
 
