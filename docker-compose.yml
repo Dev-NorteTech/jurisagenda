@@ -144,7 +144,7 @@ services:
     container_name: jurisagenda_frontend
     environment:
       NODE_ENV: production
-      BACKEND_URL: http://localhost:8000
+      BACKEND_URL: http://jurisagenda_backend:8000
     ports:
       - "3000:3000"
     networks:
